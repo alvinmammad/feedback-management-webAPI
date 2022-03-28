@@ -47,5 +47,11 @@ namespace FeedbackManagement.Data.ConcreteRepositories
                .FirstOrDefaultAsync();
             return feedback;
         }
+
+        public async Task UpdateAsync(Feedback feedback)
+        {
+             _context.Feedbacks.Update(feedback);
+            await _context.SaveChangesAsync();
+        }
     }
 }

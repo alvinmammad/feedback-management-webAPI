@@ -1,4 +1,5 @@
 using Entity;
+using FeedbackManagement.API.EmailService;
 using FeedbackManagement.API.Settings;
 using FeedbackManagement.Business.ConcreteServices;
 using FeedbackManagement.Core.AbstractServices;
@@ -8,11 +9,13 @@ using FeedbackManagement.Data.DAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -44,7 +47,27 @@ namespace FeedbackManagement.API
             services.AddScoped<IFeedbackCategoryService, FeedbackCategoryManager>();
             services.AddScoped<IUserFeedbackService, UserFeedbackManager>();
             services.AddScoped<IUserService, UserManager>();
+            services.AddHttpContextAccessor();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.ConfigureApplicationCookie(options =>
+            {
+                //options.Cookie = new CookieBuilder
+                //{
+                //    HttpOnly = true,
+                //    Name = ".FeedbackManagement.Security.Cookie",
+                //    SameSite = SameSiteMode.Strict
+                //};
+            });
+            services.AddScoped<IEmailSender, EmailSender>(i =>
 
+                 new EmailSender(
+                     Configuration["EmailSender:Host"],
+                     Configuration.GetValue<int>("EmailSender:Port"),
+                     Configuration.GetValue<bool>("EmailSender:EnableSSL"),
+                     Configuration["EmailSender:UserName"],
+                     Configuration["EmailSender:Password"])
+
+            );
             services.Configure<IdentityOptions>(options =>
             {
                 //password options :
@@ -64,10 +87,19 @@ namespace FeedbackManagement.API
 
             });
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
-            //var jwtSection = Configuration.GetSection("JWT");
-            //services.Configure<JwtConfig>(jwtSection);
-            //var jwtBearerTokenSettings = jwtSection.Get<JwtConfig>();
-            //var key = Encoding.ASCII.GetBytes(jwtBearerTokenSettings.SecretKey);
+
+
+            var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
+            var tokenValidationParams = new TokenValidationParameters()
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                RequireExpirationTime = false
+            };
+            services.AddSingleton(tokenValidationParams);
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -77,33 +109,74 @@ namespace FeedbackManagement.API
             })
             .AddJwtBearer(jwt =>
             {
-                var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
                 //jwt.RequireHttpsMetadata = false;
                 jwt.SaveToken = true;
-                jwt.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = true,
-                    RequireExpirationTime = false;
-                    ValidIssuer = jwtBearerTokenSettings.Issuer,
-                    ValidAudience = jwtBearerTokenSettings.Audience,
-                   
-                    
-                    ClockSkew = TimeSpan.Zero
-                };
+                jwt.TokenValidationParameters = tokenValidationParams;
             });
             //services.Configure<JWTsettings>(Configuration.GetSection("JWT"));
             services.AddAutoMapper(typeof(Startup));
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );
+
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FeedbackManagement.API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "FeedbackManagement.API",
+                    Version = "v1"
+                });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please insert JWT with Bearer into field",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "Bearer"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                    {
+                    new OpenApiSecurityScheme
+                    {
+                         Reference = new OpenApiReference
+                         {
+                                 Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                         }
+                    },
+                    new string[] { }
+                    }
+                });
             });
+
+            //services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "FeedbackManagement.API", Version = "v1" });
+            //    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+            //    {
+            //        In = ParameterLocation.Header,
+            //        Description = "Insert token",
+            //        Name = "Authorization",
+            //        Type = SecuritySchemeType.Http,
+            //        BearerFormat = "JWT",
+            //        Scheme = "Bearer"
+            //    });
+            //    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            //    {
+            //        new OpenApiSecurityScheme
+            //        {
+            //            Reference=new OpenApiReference
+            //            {
+            //                Type=ReferenceType.SecurityScheme,
+            //                Id="Bearer"
+            //            }
+            //        },
+            //        new string[]{}
+            //    }
+            //    );
+
+            //});
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -120,9 +193,9 @@ namespace FeedbackManagement.API
             }
 
             //app.UseHttpsRedirection();
-            app.UseRouting();   
+            app.UseRouting();
             app.UseAuthentication();
-            
+
 
             app.UseAuthorization();
 

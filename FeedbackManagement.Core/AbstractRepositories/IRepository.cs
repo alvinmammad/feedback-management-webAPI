@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -13,6 +14,6 @@ namespace FeedbackManagement.Core.AbstractRepositories
         Task<IEnumerable<TEntity>> GetAll();
         Task CreateAsync(TEntity entity);
         void Delete(TEntity entity);
-        
+        //Task UpdateAsync(TE userFeedback);
     }
 }

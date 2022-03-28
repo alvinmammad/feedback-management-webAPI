@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FeedbackManagement.API.DTO
+namespace FeedbackManagement.API.DTO.HRFeedbackDTOs.HRFeedbackListDTOs
 {
-    public class DepartmentDTO
+    public class ListDepartmentDTO
     {
-        public int ID { get; set; }
-
         public string DepName { get; set; }
+
     }
 }

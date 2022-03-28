@@ -12,6 +12,8 @@ namespace FeedbackManagement.Core.AbstractServices
         Task<Feedback> GetFeedbackWithCategoryAsync(int id);
         Task<IEnumerable<Feedback>> GetFeedbacksWithCategoryAsync();
 
+        Task UpdateAsync(Feedback feedback);
+
        
     }
 }

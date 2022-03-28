@@ -70,14 +70,22 @@ namespace FeedbackManagement.Business.ConcreteServices
             return await _unitofwork.UserFeedbacks.HRFeedbackListAsync(currentUserID);
         }
 
-        public async Task UpdateAsync(UserFeedback entityToUpdate, UserFeedback entity)
+        
+
+        public Task UpdateAsync(UserFeedback entityToUpdate, UserFeedback entity)
         {
-            entityToUpdate.AppUserID = entity.AppUserID;
-            entityToUpdate.CreatedDate = entity.CreatedDate;
-            entityToUpdate.FeedbackID = entity.FeedbackID;
-            entityToUpdate.HRNote = entity.HRNote;
-            entityToUpdate.SecretaryNote = entity.SecretaryNote;
-            await _unitofwork.CommitAsync();
+            throw new NotImplementedException();
         }
+
+        //public async Task UpdateAsync(UserFeedback entityToUpdate, UserFeedback entity)
+        //{
+        //    entityToUpdate.AppUserID = entity.AppUserID;
+        //    entityToUpdate.CreatedDate = entity.CreatedDate;
+        //    entityToUpdate.FeedbackID = entity.FeedbackID;
+        //    entityToUpdate.HRNote = entity.HRNote;
+        //    entityToUpdate.SecretaryNote = entity.SecretaryNote;
+        //    await _unitofwork.CommitAsync();
+        //    await _unitofwork.FeedbackCategories.up
+        //}
     }
 }

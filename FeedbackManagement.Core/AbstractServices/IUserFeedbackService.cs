@@ -15,6 +15,8 @@ namespace FeedbackManagement.Core.AbstractServices
         Task<UserFeedback> HRFeedbackDetailsAsync(string HRNote, int FeedbackID, int currentUserID);
         Task<UserFeedback> GetCustomerAsync(int id);
         Task<IEnumerable<UserFeedback>> HRFeedbackListAsync(int currentUserID);
+        
+
 
     }
 }

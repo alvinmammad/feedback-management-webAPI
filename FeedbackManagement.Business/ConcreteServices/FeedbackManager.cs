@@ -63,5 +63,9 @@ namespace FeedbackManagement.Business.ConcreteServices
             return await _unitofwork.Feedbacks.GetFeedbackWithCategoryAsync(id);
         }
 
+        public async Task UpdateAsync(Feedback feedback)
+        {
+             await _unitofwork.Feedbacks.UpdateAsync(feedback);
+        }
     }
 }

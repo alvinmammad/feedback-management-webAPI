@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FeedbackManagement.API.DTO
+namespace FeedbackManagement.API.DTO.CheckFeedbackNoteDTOs
 {
-    public class FeedbackCategoryDTO
+    public class FeedbackCategoryCheckDTO
     {
         //public int ID { get; set; }
-
+        
         public string CategoryName { get; set; }
-
-        //public DepartmentDTO Department { get; set; }
+        public DepartmentCheckDTO Department { get; set; }
     }
 }

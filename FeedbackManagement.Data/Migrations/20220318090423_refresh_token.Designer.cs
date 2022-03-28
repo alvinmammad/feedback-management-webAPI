@@ -4,14 +4,16 @@ using FeedbackManagement.Data.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FeedbackManagement.Data.Migrations
 {
     [DbContext(typeof(FeedbackManagementDBContext))]
-    partial class FeedbackManagementDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220318090423_refresh_token")]
+    partial class refresh_token
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

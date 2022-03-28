@@ -92,5 +92,7 @@ namespace FeedbackManagement.Data.ConcreteRepositories
                 .ToListAsync();
             return feedback;
         }
+
+        
     }
 }

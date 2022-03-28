@@ -1,4 +1,5 @@
 ﻿using Entity;
+using FeedbackManagement.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -102,6 +103,8 @@ namespace FeedbackManagement.Data.DAL
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<FeedbackCategories> FeedbackCategories { get; set; }
         public DbSet<UserFeedback> UserFeedbacks { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
         #endregion
 
     }
